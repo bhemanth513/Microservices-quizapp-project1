@@ -1,0 +1,147 @@
+Git is a distributed version control system..
+
+1) local version control..LVC
+	which the changes we can done inour own local repo..we can't collaborate with other developers here..
+2) Centralized version control system--CVCS
+	if CVCS fials.. but we will not going to have all the history like what versions we have 
+3) Distributed version control system
+	contains entire history with all the details..among multiple developers can collaborate
+	
+-> Github , GitLab, Gitbucket all these are remote repositories so that you will have a copy n remote repo as welll as in remote repo
+	GitHub is for public users ..anyone can use 
+	GitLab, Gitbucket are generally used by companies
+History of Git-
+-------
+in open source project development world ..how multiple people in the world can contribute to one project..
+	in the earlier days we used something called 
+		Archive files
+		sending the patches
+		
+from 2002 they started using propritory called BitKeeper--initially it is free then after sometime they started charging ..
+
+Then linux dev started working on Git..in 2005 git started.. git is different form Bit keeper and all other version control systems
+	With features
+	-> Simple to use
+	-> Fast
+	-> Branching
+	-> Fully distributed  ..Which makes git very famous
+	
+--> git config --global --list
+	command used to get username and email
+-> to change the usernae and email we can use below commands
+	git config --global user.name "navin"
+	git config --global user.email ".."
+	
+When we are working with git it is important to know that..
+	How do you store that the file with git
+	How do you work with git to merge different files
+	
+	
+Working directory
+staging area --> what ever in staging are please take care of it.. otherwise ignore the files
+commit history-->
+
+
+local Repository(.git)
+------------------------
+	->staging area 
+	-> commit history(objects)
+	
+Readme.md -> mark down
+
+
+git init --> to initiates the git repo..by defualt we will get master branch
+
+git init -b main -> to create git branch with name main 
+
+git log --> will show us all the commit history
+
+git add .
+
+git commit -m "...."
+
+	commit will create one hexadecimal id .. by default it wil show first 7 characters
+	
+	
+can we skip staging?
+-----------------
+	yes we can 
+	-> git commit -a -m "...." --> will go without staging
+	
+--> git diff --> it will show you the changes which happend in the file --. this command will be used before the file moved to staging
+--> git diff --staged --> to see the differences in the file after the file moved to staged area..
+
+
+git remove file--
+---------
+when u added file to git and want to delete it from git .. then use the below command.. after removing from git..then it's your chioce to delete it from 
+your workign directorey or not..
+	->git rm --cached creds.txt(filename)
+	
+	
+-->HTTPS vs SSH
+-------
+if we use https: everytime when yiu conenct with remote repo it will ask you to enter your username and password
+if we ssh and if we set up initially we no need to enter everytime
+	->ssh-keygen -o
+	
+	
+Tag..
+====
+=> git tag -a v1.0 -m "first release"
+	-a --> annotated
+	v1.0 ->version name
+	-m -> message
+after creating tag we need to push to remote repo
+=> git push origin v1.0
+
+
+
+branching 
+-----------
+checkout/switch -used to switch the branches
+
+-> git checkout -b feature  -> will create a new branch and it will switch to the new branch
+-> git branch -> will tell you the number of branches that it has
+	
+-> git switch main -> the command that swiches to main branch
+--> git branch -all -> will display all the branches along with remote branch
+
+-> git branch -d feature2 -> deleting the branch call feature2	
+
+-> git push origin feature1 --> pushing branch from local to remote repo	
+	
+How branching works?
+-----------------
+default main branch will be created..then what ever commtis u do main will point to the latest commit version
+then if you create sub branch and commit the code .. then this sub branch has the commit details.. main branch don't know about this
+
+after that if we want merge branches. like here main and feature1
+
+move to main branch then execute below command 
+-> git merge feature1
+	
+
+
+How to Push Your Spring Project to GitHub using Git Bash
+-----------------------------------------------------------
+This is the Steps to follow
+1. Create a new repository on GitHub. 
+2. Right-click on the project and choose ‘Show in Local Terminal’ - Git Bash
+3. (if you don’t see Git Bash, then install it)
+4. Initialize the local directory as a Git repository.
+$ git init
+5. Add the files in your new local repository. This stages them for the first commit.
+6. $ git add .
+7. # Adds the files in the local repository and stages them for commit.
+8. Commit the files that you've staged in your local repository.
+9. $ git commit -m "First commit"
+10. # Commits the tracked changes and prepares them to be pushed to a remote repository. 
+11. Go and copy your remote repository url (it ends in .git)
+12. In the Command prompt, add the remote repository url
+13. $ git remote add origin (remote-repository)
+14. $ git remote -v
+Verifies the new remote URL
+15. Push the changes in your local repository to GitHub.
+16. $ git push origin master
+	

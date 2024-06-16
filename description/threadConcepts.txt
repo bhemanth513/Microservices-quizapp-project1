@@ -1,0 +1,150 @@
+Deamon tthreads
+------
+Low priority threads that are running in the backgroud and provide the suppport for other non-deamon threads in a program
+setDeamon() must be called before the thread is started with the start() method, or IllegalThreadException willl be thrown
+will automaticaly terminate when all the other non-deamon threads in a program have completed..
+
+main difference btn user and deamon thread is that JVM does not wiat for deamon thread before exiting where it does wiat for the user thread
+
+
+Race Condition
+----------
+A race condition is a sittuation where in a multithreaded or concurrent application when 2 or more threads access a shared resource or variable concurrently
+and theresult of the operation depends upon the relative timing and order of the thread execution.
+
+Race condition occcures when the correctness of the program depends upon the order or timing of the concurrent operations.
+
+types 
+======
+1) Read-Modify-Write --3 step process
+	getting different values when multiple threads are running and trying to modify same data
+
+2) Check-then -Act --2 step process
+
+
+synchronized blocks and Sysnchronized method..
+------------
+->Achieve thread safety -> prevents race condition
+-> Sysnchronized blocks allow synchronization on a specified section of code with ina method
+-> Sysnchronized methods applys synchronization to the entire method body
+-> Only one thread can execute a synchronized method at a time
+
+
+
+DeadLocks
+========
+-> a deadloack is a sittuation in multithreading where 2 or more threads are blocked forever, each waiting for other to release lock..
+
+How to Detect deadloack
+-------
+->Thread Dump Analysis
+->DeadLock detection tools in IDEs
+
+
+How to resolve deadloack
+=========
+avoid nested locks
+timeout while attempting to acquire locks
+lock ordering
+using oncurrent packages
+
+
+printing the below sequence using threads
+==============
+
+1a2b3c4d5e6f7g8h9i10j11k12l13m14n15016p17q18r19s20t21u22v23w24x25y26z
+
+1) bruteforce appraoch
+
+Wait() notify()==
+
+
+wait()
+-----
+Causes the current thread to pause its execution and releases the associated monitor untill another thread invokes notify() or notifyAll()
+
+why?
+==to syncronize betweek the threads
+==pausing a threads execution untill a condition mets.
+
+notify() & notifyAll()
+-----
+wakes up a single thread or all threads that are waiting on the objects monitor due to wiat() call.
+
+
+
+
+Concurrent file reading program
+===============================
+You are tasked with developing a generic concurrent file reading program tha can ready data from multiple files concurrently usig java's thread
+pool executor framework
+
+Your program should meet the following creteria
+=====
+1. The program should be able to read from multiple files
+2. The program should process and print each data entry
+3. Each data entry that gets printed should be prefixed with the name of the thread that processed it.
+4. utilize the executorService for managing threads
+5. provide maechanism to gracefully shutdown all the threads when all files have been read..
+
+
+Executor threadpool
+
+======
+
+->Efficient thread management
+-> simplyfied thread lifecycle management
+
+Core components
+========
+1) Executor Interface
+	represnts an object capable of executing tasks.
+	contains a single method: void execute(Runnable task);
+2) ExecutorService Interface
+	1. Sub-Interface of Executor
+	2. Provides a higher-level API for managing thread execution
+	3. Offers methods for task submission, termination, and more
+3) ThreadPoolExecutor -class
+	the most commonly used implementation of the ExecutorService
+	manages the pool of worler thread pool size, thread eviction policies..
+4) Executor class
+	-Uitility class thaty provides he facory methods for creating different types of ExecutorService instances..
+Executor lifecycle
+=======
+1. Submit Task
+	tasks are submitted to the execcutor service
+	can be represnted as runnable or callable objects
+	
+2. Task queuing
+3. thread Execution
+4. tread termination
+
+
+Implementing Callable Tasks with ExecutorService & Future in Java | Concepts
+===============
+Callable 
+is a funtionaInterface in the Java.util.Concurrent package
+It represnts a task that can be executed asynchronously and potentially return a result.
+it can return a result or thrown exception
+callable tasks are typically submitted to an ExecutorService for execution.
+
+when submitted it returns a Future object that can be used to retreive the result or handle exceptions.
+
+Why?
+--bsc callable return a result where as runnable does not. this is neded when u need a output of a task
+-> callable throws checked exceptions, providing clear way to handle the exception that occures during he task execution
+--> when u have multiple tasks that are running concurrently and want to collect their results effficienlty
+
+Future
+====
+is also a Java interface..
+it represents the result of an asynchronous computation that may not be available immediatly
+
+get()
+isDone()
+cancel()
+
+
+Usecase:
+===
+use ExecutorService to execute multiple callable tasks to fetch stock prices from to fetch stock prices from different sources concurrently.

@@ -1,0 +1,53 @@
+
+
+
+spring.batch.jdbc.initialize-schema = ALWAYS
+================
+to enable spring batch tables to be created in db
+
+
+--> By default jobs will not rerun.. so you can disbale that by using below
+
+spring.batch.job.enabled=false
+
+--> @StepScope is needed whenevr the step needs that job parameters
+
+Tasklet tasklet(@Value("#{jobParameters['uuid']}")String uuid)  -> injecting job parameters using spring expression language
+
+--> Tasklets are used whenever we need some sort of callbacks just to do something generic
+
+
+==> took data from https://www.kaggle.com/datasets/gregorut/videogamesales?resource=download
+
+
+tables
+======
+
+create table springbatch.video_game_sales(
+	rankVal     int,
+    gameName    text,
+    platform    text,
+    year        int,
+    gender      text,
+    publisher   text,
+    na_sales    float,
+    eu_sales    float,
+    jp_sales    float,
+    other_sales float,
+    global_sales float);
+    
+    
+ select * from  springbatch.video_game_sales;
+ 
+ 
+ with itemwriter as a simple job
+ ======================
+ return new StepBuilder("csvToDB",jobRepository)
+				.<CsvRow,CsvRow>chunk(100,ptm)
+				.reader(csvRowFlatFileItemReader)
+				.writer( chunk->{
+						var oneHundredRows= chunk.getItems();
+						System.out.println("got "+ oneHundredRows.size());
+				}).build();
+	}
+	

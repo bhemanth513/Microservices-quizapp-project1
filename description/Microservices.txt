@@ -1,0 +1,675 @@
+MicroServices
+-----------
+prerequesites -Spring rest, Spring Boot, JPA/Spring Data
+
+
+-> Employee/Customer Management
+
+	Main components of the app
+	
+	-> Employees 				-> Customers 			-> Courses				-> Address
+
+GET 	/employees/            		customers/              /courses/               /address/
+GET     /employees/{id}             customers/{id}          /courses/{id}           /address/{id}  
+POST    /employees/            		customers/              /courses/               /address/
+
+
+Employee module |									DB
+				|									|
+course module   |------> Git --->Jenkins ------> Server
+				|
+customer Module |
+
+
+problem/challanges with monolythic
+-----------------------------
+	1) Any chnages in the code leads you to test the entire application
+	2) Developer's may not have the kknowledge of all the modules, making it harder to get started/fixing issues.
+
+	3) let's say there is some 20% offer on all courses..ultimately more cusomers will try to login/register to buy course..
+		so as a solution you are using LOAD BALANCER to handle all the incoming requests..by having application deployed in multiple servers..
+			-> So here the disadvantage is you need to deploy only customer module ..but as it is monolythic ..you are deploying entire service to all the servers..
+			==> Customer Module is not independently deployable
+	
+Introduction to MicroServices
+----------------------------
+Building small.small services..
+Each application is smaller application with their own db..
+
+
+we will develop 4 microservices as 4 different apps
+Build these 4 apps and generate war files and put it in seperate servers..
+If you put all your microservices inside single server, incase the server down, all your microservices will goes down..
+So every microservices should run inside a individual server
+
+As you know your spring boot has a embedded tomcat server.. when you run your spring boot app, 
+your code has deployed inside tomcat server automatically
+
+
+==> Communication will happen through Rest calls
+
+
+Employee module |------> Git --->Jenkins ------> Server(Jar) -DB									
+													
+course module   |------> Git --->Jenkins ------> Server(Jar) -DB
+				
+customer Module |------> Git --->Jenkins ------> Server(Jar) -DB
+
+=> All the modules are independently deployable..Each app can tested Differently
+-> Code chanegs on one app/services doesn't need an entire application testing 
+-> Dev working on one service, shouldn't require the entire application kknowledge
+
+Handling load in M
+-> MicroServices are scalable and independently deployable when the load increases.
+
+DisAdvantages ->
+
+-------
+Why springboot for microservices
+-> spring boot which support bean management, loose coupling, managing dependencies, server supports(tomcat)..
+
+Fast Development
+Less Configuration
+Autoconfiguration
+Embedded Server
+Production Ready
+Starter Project
+ReadyMade support for microservices -through spring cloud
+
+Lets code
+
+
+--> microservice communication happend through RestTemplate now..
+We have used RestTemplate as a rest client in order to make a rest call
+FYI: RestTemplate is deprecated and might me removed from spring 6.X.. So going forward we will use Feign Client, WebClient as it's replacement..
+
+
+What the heck is spring cloud?
+-----------------
+
+challanges::
+	How to develop Load Balancer-Load Balancer comes free with spring cloud
+	How you will controll a server down senarios when some unknow person continuously hitting your server to get it down
+	When one server making a calll to other service but that is down ..how can we handle that .
+	
+	
+	-> Discovery of services
+	->Distributed Configuration
+	-> Load balancing
+	-> Scalability
+	-> REsilience
+	-> Monitoring and tracing
+	
+cloud solutions
+====
+	Spring Cloud
+	Netflix OSS
+	Vert.x
+	Akka
+	Restlet
+	Ninja
+So Spring Cloud came into picture ..here..
+
+If you want solve some common problems in microservices..you can either get the solution from the store.(Spring cloud) or wite the logic by yourself..
+
+So spring cloud -provides some common tools and techniques to quickly develop common patterns of microservices
+
+
+Build microservices----
+-------------
+Introducing ModelMapper
+
+queries
+----------------------------
+SELECT * FROM seleniumexpress.address;
+
+alter table seleniumexpress.address 
+add column `employee_id` int null after `zip`,
+add index `fk_employee_id` (`employee_id` ASC) VISIBLE;
+
+alter table seleniumexpress.address add 
+constraint `fk_employee_id`
+foreign key(`employee_id`) references `seleniumexpress`.`customer`(`id`)
+on delete no action
+on update no action;
+
+select a.id,a.line1,a.line2,a.state,a.zip from seleniumexpress.address a join seleniumexpress.customer c 
+on a.employee_id = c.id where a.employee_id = 1; 
+
+UPDATE `seleniumexpress`.`address` SET `employee_id` = '1' WHERE (`id` = '1');
+INSERT INTO `seleniumexpress`.`address` (`id`, `line1`, `line2`, `state`, `zip`, `employee_id`) VALUES ('2', 'Hyderabad', 'Paradise Backside', 'Ts', '500032', '2');
+
+
+MicroServices communication
+-----------------------
+
+there are 2 ways of initializing restTemplate.
+1) one is through configuration class and autowiring in required class
+	@Bean
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
+
+
+2) defining through constructor
+ //initializing resTemplate through constructor
+    public CustomerService(@Value("${addressService.base.url}") String addressBaseUrl,
+                           RestTemplateBuilder builder){
+        this.restTemplate = builder
+                .rootUri(addressBaseUrl)
+                .build();
+    }
+	
+	
+Why not RestTemplate?
+-----------
+
+
+bygiving server.port=0..then we can run multiple dynamic port allocation in spring boot
+
+when same application running in multiple servers we can handle that through load balancer ..though Rest template is a blocking calll which block
+ the thread/app untill it get the response back from the other server...
+Here it uses thread per  request model...every request served by a request..if a call to db/external api is made, there is probability,you will
+run out of threads..
+
+SPRING WEB FLUX is non blocking in nature. a thread here never sit ideal..Hence u will never run out of threads..
+
+Rest calls using WEB Client
+------------   
+  @Bean
+    public WebClient webClient(){
+        return WebClient
+                .builder()
+                .baseUrl(addressBaseUrl)
+                .build();
+    }
+
+        AddressDaoRequest addressDaoRequest = webClient.get()
+                .uri("/address/"+id)
+                .retrieve()
+                .bodyToMono(AddressDaoRequest.class)
+                .block();
+				
+				
+-> App1 calling to the App2 by one thread..and app2 wait 10s to give response.. in this non-blocking case no need to wiat 10s, do some other work,
+be assured you will get a response back.
+
+
+
+Feign Client
+---------------------------
+Feign is a netflix product
+Used by netflix to make rest calls..later netflix stopped using it and made it opensource	
+Netflix OSS(open source software) is a set of frameworks and libraries that netflix wrote to solve some intresting distributed-systems problems at scale.
+Netflix fully transfered Feign to a open source community under a new project named OpenFeign, it is a alternative to RestTemplate..
+Spring version of feign client is so reliable that now netflix is using it in their internal projects
+
+Making rest calls using feign clients
+------------
+
+setup 1)
+dependencies in POM
+-------
+	<properties>
+		<java.version>17</java.version>
+		<spring-cloud.version>2021.0.3</spring-cloud.version>
+	</properties>
+	
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>
+
+step 2) -create a client class
+==========
+
+@FeignClient
+public interface AddressClient {
+
+    @GetMapping("address/{id}")
+    AddressDaoRequest getAddressByEmployeeId(@PathVariable("id") int id);
+}
+
+
+=> To scale the application .. we can introduce load balancer to handle the laod and ditribute the load to multiple servers
+
+=> Employee service and address service --employee service(client) calling address service
+->the client will call address service in a load balanced way
+-> We are keeping the load balancer in the client side and giving the load balancer responsibility to the client..Hence it is called as 
+CLIENT SIDE LOAD BALANCING..
+
+-> Ribbon load balancer
+-> Spring Cloud load balancer..
+
+
+ssetting up ribbon --this is not using in latest projects..
+==================
+1) <dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+		</dependency>
+2) in application.properties 
+	address-service.urls=https://localhost:8081,https://localhost:8082
+
+-< Ribbon will distribute the load in sequencially..in a round robbin fashion
+
+-> basically you can't hardcode the ip and port here as it changes dynamically in a distributed environment..here we can learn about service discovery
+
+------------
+In this lesson We will get started with a Java Microservices Concept called Service Discovery and Service Registration. When we work on distributed systems / 
+Microservices architecture, we deal with so many servers. It’s very difficult to know the server information as they are getting maintained by containers and 
+servers are created and destroyed dynamically. It’s a bad Microservices practice to hardcode server urls in our code. The best thing we can do to introduce a 
+discovery server and making our Microservices client to that. The Microservices automatically registered themselves with a discovery server during start up and 
+discovery server maintains their information inside a server registry. 
+
+When a client Microservices wants to communicate to another service , it ask the discovery service to discover and get the service url of the desired 
+Microservices and dispatch a call. It’s also very important to understand that here the client itself is doing the service discovery and hence it’s called a 
+client side service discovery. 
+
+In a client side service discovery, the client once discovered the available instances of a destined Microservices ,it’s takes help of a client side load 
+balancer to call the destined Microservices in a load balanced way .
+
+In this lesson we will learn about the concepts of Service Discovery and Registration  and in the next session we will implement the same using Spring Cloud 
+Eureka server and spring boot. 
+
+------------
+challange
+---------
+-> In a distributed system we always scale up the servers whenever the laod increases and scale down the servers 
+and destroy the servers whenever scale decreases.. so this is going to be a challenge for us when the servers are created dynamically for us..
+Then how can we track port number, Ip address or URL information of that perticular server?
+
+Network calls/Time latency
+---------------------
+In this microservices as we dealing with distributed architecture.. one server needs to connect with another server through API..we called it as network call
+we would have some time latency
+
+Traditional load balancer, to handle the request coming from server-A to server-B..
+Server-A willl use LOAD BALANCER to handle multiple requests..this is called server side load balancer
+
+DisAdv of Traditional Load Balancer
+============
+-> It needs 2 network calls(first we are hitting load balancer then the server)
+-> Single pount of failure-(if load balancer fails)
+-> Need maintainance cost and seperate team
+-> Not container friendly
+
+Discovery Service
+=================
+->Service discovery (SD) is used for the above disadvantages..
+->So SD will have all the register servers in it..
+->Whenever server a will send request to load balancer then it will query to SD to find the instance and then dispath a request t one of the services..
+	this is called a server side service discovery
+
+
+SO now 
+Load balancer(LB) -> Receives client request and makes a call to a desired service in a load balancer way
+Service Discovery -> helps LB to discover the service urls
+
+
+--> Service A wants to communicate with service B..
+-------------------------
+1) client request(Server-A) and makes a request to a server(router/load balancer/middle man)
+2) That LB does a query with a DS..
+3) The DS responded back with available number of instances of service-B that the load balancer can call..
+4) Then LB server picks up one of the service-B instances and make a call
+5) Here the service -A (client) doesn't talk to the SD directly..it call the another server(Load Balancer) which helps to discover the 
+	service-B url info..
+6) this pattern is called server side discovery.
+
+
+client side service discovery
+------------------------
+the client only calling the server-B instance in a load balanced way, this is called client side load balancing
+There is no external server containing a router or load balancer involved here.
+Client only discovering the address(SD) of the service-B, hence it is called client side discovery..
+
+still there are 2 network calls...can we still improve this?
+---
+SO let's say we have Serivce-A and 2 instances of service B has registered under SD..
+then the process from Service A.. wants to store all the info of SD that has.. then when  a service starts, it makes a call to 
+discovery service, take the entire registry and caches it.. here only one call made and service-A has all the info..
+Now Service A can directly make a call to Service -B without looking up in SD.
+
+what if the insatnce goes down?
+-----
+in case if host is not available, it internally connect to service discovery again and update it's cache..
+If an insatnce is removed discovery will update it cache
+
+Client side service discovery -available tools..
+	Netflix Eureka
+	Zookeeper
+	Consul
+Server Side Service Discovery -available tools
+	NGNIX
+	AWS ELB
+	
+-> disadvantage w.r.t client side SD is we need to take care about load balancing ..but anyway we have very good APL's available..
+	for Discovery -Spring cloud starter Eureka client
+	for Load Balancing- Spring cloud starter load balancer
+	
+Spring Cloud Netflix Eureka
+============================
+1) add dependency to your pom..
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+		</dependency>
+
+
+2)Add @EnableEurekaServer in the main class
+
+3) server.port=8761
+eureka.client.fetch-registry=false
+
+to start SD without any error.. when it starts it is not assuming that another SD is running and not fetching it's registry by hitting that URL
+
+
+4) we no need to register SD in Eureka server for that use below property
+
+eureka.client.register-with-eureka=false
+
+-> Regions -zone1 zone2, zone3
+
+lets say we have deployed our application servers in all the 3 zones of the region
+we will maintain Eureka Service Discovery for each zone and keep them in sync
+
+
+--> Eureka Discovery Client dependency
+	By adding this dependency to the classpath, you are making your address-service a client to discovery service..
+	then once you start the application.. Address App during start-up Hitting the default discovery service url to register itself..
+	
+	
+WHen these services starts, they know where eureka usually runs.it's 8761
+So they use the default localhost:8761 to connect and register themselves with eureka
+
+what happens when u chnage the EUreka port?
+-----------
+Now we need to let these services know where eureka is running.. for example localhost:5000
+if we don't do, it will by default try to look for eureka in 8761 port number and that will result error and registration failure
+
+so we need to explicitly tell to the services by using property..
+	eureka.client.service-url.defaultZone = http://localhost:5000/eureka -> in both customer an daddress services
+	
+	then also add them in serivce descovery app.
+		eureka.client.service-url.defaultZone = http://localhost:5000/eureka -> in both customer an daddress services
+		eureka.client.register-with-eureka=true
+		
+		
+--> Eureka client sends a heart beat in every 30 sec to a Eureka Server
+--> Eureka Sever remove the instance if didn't receive any heartbeat for 90 sec
+--> lease-renewal-interval-in -seconds -> set heart beat interval -> for setting heartbeat interval more than 90 sec
+-> Lease-expiration-duration-in-sec-> sets service expiry duration
+
+property--by defualt it is 30 sec ..then if you want to increases use below property
+---------
+eureka.insatnce.lease-renewal-interval-in-seconds=90
+
+	
+		
+Calling restAPi using EUREKA client 
+    //without load balance
+----------------------
+ @Autowired
+    private DiscoveryClient discoveryClient;
+	
+ //get me the details for the ip and a port number for address service
+        List<ServiceInstance> serviceInstances = discoveryClient.getInstances("address-app");
+        ServiceInstance serviceInstance = serviceInstances.get(0);
+        String uri = serviceInstance.getUri().toString();
+        AddressDaoRequest addressDaoRequest = restTemplate.getForObject(uri+"/address-app/api/address/{id}",AddressDaoRequest.class,id);
+
+
+Load balancing uing Eureka
+---------------
+
+@EnableDiscoveryClient  --> add this in main class
+
+
+ //with load balancer
+    @Autowired
+    private LoadBalancerClient loadBalancerClient;
+
+ServiceInstance serviceInstance = loadBalancerClient.choose("address-app");
+String uri = serviceInstance.getUri().toString();
+System.out.println("uri >>>>>>>>>>> "+uri);
+AddressDaoRequest addressDaoRequest = restTemplate.getForObject(uri+"/address-app/api/address/{id}",AddressDaoRequest.class,id);
+
+
+without using any code using laod balance  --client side load balancing
+==================
+1)Just annotate Employee Service class(bcs it is calling address service) with @LoadBalanced
+ @LoadBalanced in config class
+
+    @LoadBalanced
+    @Bean
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
+
+3)and pass service name in the rest template call
+AddressDaoRequest addressDaoRequest = restTemplate.getForObject("http://address-app/api/address/{id}",AddressDaoRequest.class,id);
+
+here Employee Serive it self having load balancer internally and calls to SD for the registered service and get the response
+
+how it is doing laod balancing?
+	when u added the netflix Eureka Client dependency to employee-service the spring cloud load balancer has been pulled as a transitive
+	dependency which is doing the load balancing internally
+	
+so the client it slef doign load balancing and also this is disadv of client side laod balance
+
+
+
+
+Distributed Configuration->
+=========
+can implement using 
+	spring cloud consul
+	spring cloud config
+	zookeeper
+	
+we are using consul
+=======
+	consul is a service networking solution to automate configuration..
+	Spring cloud consul helps us in maintaining all the configuration data accross all the services in one place using the consul server..
+	Consul server shares the all required configuration data during the boostrap phase
+	
+	
+	install consul.exe
+	
+	command to run
+	consul agent -server -bootstrap-expect=1 -data-dir=consul-data2 -ui -bind=192.168.1.39
+	
+	
+	consul port url
+	======
+	http://localhost:8500/ui/dc1/kv/config/CallDetailsMS/
+	
+	
+	Adding spring cloud dependencies
+	==============
+	spring boot 3.0.x -is compatable for 
+	<spring-cloud.version>2022.0.0</spring-cloud.version>
+	
+	
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	-- Consul required dependencies
+	=====================
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-consul-config</artifactId>
+		</dependency>
+		<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-bootstrap</artifactId>
+		</dependency>
+	
+	
+	
+	bootstrap properties
+	================
+	cloud:
+    consul:
+      config:
+        enabled: true
+        prefix: config
+        defaultContext: application
+        profileSeparator: '::'
+        format: YAML
+		
+		
+Service Discovery using consul
+=====================
+there are many SD's like Netflix Eureka, Zookeeper, Consul
+
+
+=> customer service calling the plan service and friend-and-family serivce
+=========
+so we need to have dependency in all the services
+	i.e.
+	=========
+	<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-consul-discovery</artifactId>
+			
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.cloud</groupId>
+					<artifactId>spring-cloud-netflix-hystrix</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.cloud</groupId>
+					<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+				</exclusion>
+			</exclusions>
+	</dependency>
+
+
+	
+	
+	
+	bootstrap properties
+	====================
+	cloud:
+    consul:
+      config:
+        enabled: true
+        prefix: config
+        defaultContext: application
+        profileSeparator: '::'
+        format: YAML
+
+
+
+
+
+
+
+
+
+
+
+MicroServices by Navin Reddy
+========================================
+
+
+cloud computing
+-------
+cloud is a combination of multiple servers which u are not doing and someone else doing for u
+
+->On-premises
+->Iaas
+->Caas
+->Paas
+->Faas
+->Saas
+
+->public 
+->private
+->hybrid
+
+blue green deployement
+=============
+u will have 2 running insatnces at the same time.
+
+at one point only one instance will be live
+blue Environment --> 
+green environment -->	
+
+
+cloud ready vs cloud native
+============
+benifits interms of cost,scalling and lesss issues
+
+cloud ready means -> deploying your application which is in our on-premises servers to cloud by making some sort of chnages to use cloud services..
+cloud-native -> to develop application completely based on cloud
+
+12 factor app -> we need to follow these to build cloud native application..
+	1) Codebase
+	============
+		one codebase for one application..tracked in revision control(git),many deploys..
+	2)Dependencies
+	=========
+		Explicitly declare and isolate dependencies
+	3)Configuration
+	========
+	store config in the environment..
+	4) Backing services
+	==========
+		Have loose coupling between your application and backing services(can be DB) 
+	5)build,release,run
+	==========
+		Strictly seperate build and run strategies
+	6)Processes
+	==========
+		Execute the app as one or more stateless processes
+	7) Port binding
+	=========
+		export services via port binding
+	8) Concurrency
+	======
+		scale out via the process model=vertical scalling
+	9) Disposability
+	======
+		Maximize robustness with fast startup and graceful shutdown
+	10)Dev/Prod parity
+	========
+		eep dev,stagging and prod as similar as possible
+	11) logs
+	=======
+		treat logs as event streams
+	12) Admin processes
+	=======
+		Run admin/management tasks as one-off processes
+		
+		
+without load balancer===
+--------------------------
+http://localhost:8090/quiz/get/1
+
+with load balancer
+------------

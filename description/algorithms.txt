@@ -1,0 +1,10 @@
+Sliding Window Algorithm
+=================
+
+Problem-solving technique
+Reduces time-complexity from quadratic to Linear
+transform two nexted loops into a single loop
+
+->ex:
+Given a arr-[3,5,1,9,4,5] and a specified window size -k- find sum of maximum sum of the subarray
+

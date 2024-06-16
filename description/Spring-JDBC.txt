@@ -1,0 +1,228 @@
+Spring JDBC
+-------------
+1) Spring JDBC configuraion-JDBC template
+2) Batch Inserts
+3)Spring JDBC selects-ROWMapper-beanPropertyRowMapper
+4) RowMapper vs ResultSetExtractor
+5)Task walkthrough -
+6) DEV
+7)Batch Update
+8)JDBC vs Spring JDBC
+9)JDBC template vs NamedParameterJDBCTemplate
+
+
+=======
+connecting java application to DB..
+
+JDBCTemplate
+	DataSource -> is an interface help us to get a connection-takes username,passaword as arguments and return a Connection object
+	
+	String sql = "";
+	we wil store required parameters in Object[] args to store the Student Obj type
+	Object[] args = {};
+	
+	JDBCTemplate.update(sql,arg); ->Hi, im JDBC template..your quey is ready now let me insert
+	
+	DataSource -Interface -implemented by
+		DriverManagerDataSource -class	which extends AbstractDriverBasedDataSource-class
+			has costructor -DriverManagerDataSource(String url,String username, String passaword)
+			
+	So we can use like 
+		DataSource dataSource = new DriverManagerDataSource(,,);
+		
+	
+	->Lets spring create the JDBCTemplate object so that we can just do auto-wire whenever we need one.
+	
+	@Autowired
+	JDBCTemplate jDBCTemplate;
+	
+	
+	
+Using XML based
+----------------------
+DataSource -obj in XML format -bean.xml
+-------------
+<bean id = "dataSource",class = "import class">
+	
+	<constructor-arg name = "url" value = ""/>
+	<constructor-arg name = "username" value = ""/>
+	<constructor-arg name = "passaword" value = ""/>
+</bean>
+
+
+JDBCTemplate -obj in XML format
+--------
+
+<bean id = "jDBCTemplate",class = "import class">
+	
+	<constructor-arg name = "dataSource" ref = "dataSource"/>
+</bean>
+
+
+<bean id = "studentDao",class = "import class">
+	<property name = "jDBCTemplate" ref = "jDBCTemplate"/>
+</bean>
+
+in Main class
+-----------
+ApplicatioContext context = new ClassPathXmlApplicationContext('bean.xml');
+
+StudentDaoImpl st = context.getBean("studentDao",StudentDaoImpl.class);
+
+------
+
+Using Annotation instead of xml
+----------
+@Component(name = "studentDao")
+class StudentDaoImpl{
+	
+	@Autowired
+	JDBCTemplate jDBCTemplate;
+
+}
+
+
+main(){
+
+StudentDaoImpl st = context.getBean("studentDao",StudentDaoImpl.class);
+
+}
+
+=======================
+fetching records using Java Object
+
+
+
+jDBCTemplate.query(sqlSelect,rowMapper);
+
+custom class:
+-------------
+class SudentRowMapper() implements RowMapper<Student>{
+	
+	@Override
+	public Student mapRow(ResultSet rs,int rowNum) throw ..{
+	
+	}
+}
+
+
+Select query
+	
+	-->JDBCTemplate.query(sql,new RowMapper())
+	-->JDBCTemplate.queryForObject(selectSql,new SudentRowMapper())
+	-->JDBCTemplate.queryForObject(selectSql,new RowMapper(),rollNo)
+	
+	
+BeanPropoertyRowMapper
+--------------------
+when we use this -there is no need of custom rowmapper
+
+	-->JDBCTemplate.queryForObject(selectSql,new BeanPropoertyRowMapper<Student>(Student.class))
+-> here column names should match with java bean and table col names..
+	sql = "select ROLL_NO as rollNo,STUDENT_NAME as name, STUDENT_ADDRESS as address from STUDENT where ROLL_NO = ?";
+	
+table cols: ROLL_NO,STUDENT_NAME,STUDENT_ADDRESS
+Java student obj
+Student{
+	Stirng rollNo;
+	Stirng name;
+	String address;
+}
+
+
+-> Deleting records
+
+sql = "DELETE FROM STUDENT WHERE ROLL_NO = ?";
+jDBCTemplate.update(sql,rollNo);
+
+
+
+--> we have execute(String sql) -> method in JDBCTemplate to execute a signle sql..typically a DDL statement
+--> We have update(sql) -> to perform DML operations
+
+
+BatchUpdate();;
+-------------	
+for inserting multiple rows 
+
+Sql = "INSERT INTO STUDENT VALUES(?,?,?)";
+ArrayList<Object> li = new ArrayList<>();
+for(Student s: stidentList){
+	Object[] stData = {s.getname(),,,};
+	li.add(stData)
+}
+
+jDBCTemplate.batchUpdate(sql,li);
+
+
+-----------
+
+ResultSetExtractor--Interface
+find student by name
+
+sql = "sleect * from student where student_name = ?"
+
+JDBCTemplate.query(sql,ResultSetExtractor<>())---
+
+	-> which has method extracData(ResultSet arg);
+	
+
+class ResultSetE implements ResultSetExtractor<List<Student>>{
+	
+	@Override
+	public List<Student> extracData(ResultSet rs) throw SQLException,DataAccessExcpetion{
+		List<Student> stLi = new ArrayList<>();
+		while(rs.next()){
+			
+			Student s = new Student();
+			s.setRollNo(rs.getString("rollNo"));
+			s.setName(rs.getString("name"));
+			s.setAddress(rs.getString("address"));
+			stLi.add(student);
+		}
+		return stLi;
+	}
+}
+
+----------
+
+RowMapper Vs ResultSetExtractor
+
+RowMapper -will return the result one by one..it will return one row at a time..it will cll multiple times to DB to fetch all the records
+ResultSetExtractor -> will query only once with DB and get the result
+
+
+BatchUpdate
+------------
+@Transactional
+public int updateStudent(List<Student> studentList){
+
+	sql = "update School.Student set STUDENT_ADDRESS = ? where ROLL_NO = ?";
+	
+	jDBCTemplate.batchUpdate(sql,new BatchPreparedStatementSetter()){
+		@Override
+		public  void setValues(PreparedStatement ps,int index) throws SQLException{
+			ps.setString(1,studentList.get(index).getAddress());
+			ps.setInt(2,studentList.get(index).getRollNo());
+		}
+		
+		//How many times our query need to execute
+		@Override
+		public int getBatchSize(){
+			return studentList.size();
+		}
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+

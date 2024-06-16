@@ -1,0 +1,98 @@
+RAD in spring boot?
+===========
+Rapid application development which is a modified watterfall model focusing on developing the s/w in a short span of time
+
+phases
+====
+	Bussiness model
+	Data Model
+	Process Model
+	Application Generation
+	Testing and turnover
+	
+==> Spring boot starter web dependency is responsible for configuring your tomcat server
+
+--> We can use our own web dependencies in spring boot instead of default spring web
+	spring.main.web-application-type=none  => to desable default spring web.. then u cn proceed for configuring your own server
+	
+==> by default spring application will enable @EnableAutoConfiguration --which will scan all the config classes..
+	if you don't want to scan perticular classes then use
+		@EnableAutoCOnfiguration(exclude = {DataSourceAutoConfiguration.class})
+		
+==> what does @springBootApplication will do?
+	it is equivallent to @Configuration, @EnableAutoConfiguration and @ComponentScan
+	
+==> @Value is from springframwork.beans package
+
+==> @RestCOntroller annotation?
+	@RestCOntroller is a convenience annotation to create restful controller
+	combination of 2 @Controller ,@ResponseBody..it converts the response to JSON or XML
+	which eleminates the need of annotate every request handling method of a controller class with the responseBody annotation
+	
+==> Difference between @Controller and @RestCOntroller?
+	WebApplication and RestAPI
+	WebApplication is generally view(HTML+CSS+JS) bcs they are intended for human viewers.. RestAPI just return the data in the form of JSON or XML.
+	SO @Controller map od the model object to view or template and make it human readable
+	but @RestCOntroller is simply return object and object is written into HTTP response as JSON or XML
+	
+=> RequestMapping can be used with GET,POST,PUT and many other methods ..
+	GetMapping is only an extension of REquestMappign..which helps to improve clarity on request
+	
+	
+=> Spring boot maven-build plugin and <pakaging>War</package>  helps to deploy our spring boot project
+
+=>o read YML file we just need define one class
+	class YamlPropertySourceFactory implements PropertySourceFactory{
+			.....
+		}
+		
+	-> use YmlMapFactoryBean to load YML as a map
+	-> Use YamlPropertyFactoryBean to load yml as properties
+	
+	in main class we neeed to use 
+	@ConfigurationProperties(prefix = 'yml')
+	@PropertySource(value = "classpath:application.yml",factory = YmlPropertySourceFactory.class)
+	
+	adv
+	===
+	more clarity and more readability
+	perfect for hierarchical configuration data, which is also represented in a better, more readable format.
+	Support for map,list and scalar types
+	
+Q) What is Hibernate and why use it?
+	why hibernate: 
+		Hibernate eliminates all the boiler-plate code that comes with JDBC.
+		It supports HQL which is more Object-oriented.
+		It provides transaction management implicitly.
+		Hibernate throws  JDBCException or HibernateException which are the unchecked exceptions, so we don’t need to worry about handling using try and catch.
+		Hibernate supports caching for better performance.
+
+
+Q) Important Interfaces - Annotations used in  Hibernate 
+	==>SessionFactory(org.hibernate.session.factory)
+		Instance is used retrieve Session objects for DB operations.. we need to initialize that once and and reuse it again anad again..
+		it is like a one session object for db connections
+	==> Session(org.hibernate.session)
+		it is used for conneting application with persistance store like hibernate framework /database.. used to get physicall connections with db..
+		it provides methods for CRUD operations
+	===> Transaction => this specifies the single/atomic units of work
+Q) Mappings in  Hibernate 
+
+	==>One-to-One
+	==>Many-to-One
+	==>Many-to-Many
+	
+Q) What are the hibernate configuration file/ Mapping file. Usually asked in advanced java interview questions.
+Q) hibernate caching 
+	
+	
+===> Hibernate provides JPA implementations hence we can use jPA annotations as well as XML configurations to achieve this mapping..
+		JPA is implementations of Hibernate 
+		
+	
+==> hibernate caching?
+		first level of caching
+		second level caching
+		Query cache
+	
+	

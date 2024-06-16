@@ -1,0 +1,254 @@
+Agile Scrum
+=============
+widely used project management tool that promotes collaboration, flexibility and Iterative Development..
+It breaks work into small managable tasks for sprints and emplies self organizing team approach
+Key features includes
+	Daily standup meeting
+	product backlogs
+	Delevering Incremental value to Customers
+Scrum has to adapt changing requirements and delever high quality products more effficiently
+
+Imagine a time in the late 90's in a Software Development firm.. they used to follow Waterfall methodology
+	adapting to the changes is difficult with this currenlty
+	responding to the changes quickly in this competitive world with less resposive time
+	
+The watefall model involves teams followed a series of steps, and only going forward after the provious steps are completed
+this is best to use in the scenarios where the teams are small, and the project is expected to move in a predictable manner
+
+Waterfall Model
+	requirements gathering
+	system design 
+	implemetation
+	testing
+	delever/deployement
+	maintenance
+	
+Disadvantages
+	makes changes difficult
+	it doesn't focus on the end-user/client
+	testing phase is delayed untill the most of the project is completed
+	measuring the proggress with in stages is difficult
+	
+to overcome these disadvantages...we have Agile........
+
+what is Agile?
+	in 2001 agile was introduced
+	Agile is a set of principles used in project management and software development
+	
+	it enables the team to deliver value to their customers with ease
+	Agile team deliver work in small but usable increments
+	Evaluation of the requirements,plans and results take place continously. this allows teams to respond to the chanegs quickly
+	
+	
+Some values mentioned in the manifesto
+		Individuals and interactions		over 	processes and tools
+		Customer Collaborations		over 		Contract Negotiation
+		Working products 			over 		comprehensive Documentation
+		
+		Responding to the chage over Following a plan
+		
+		
+Agile Principles
+=============
+	-> Customer satisfaction
+	-> Welcome change
+		changes needs to address, even late in the development process
+	-> develiver frequently
+	-> Work together
+	-> movtivated team
+	-> face to face interaction is the most efficient in the means of communication
+	-> Working Software
+	-> Constant phase => the agile process promotes sustainable development..
+	-> Good Design
+	-> Simplicity
+	-> self organization
+	-> Reflect and Adjust
+	
+Advatanges of Agile
+=========
+	Large amount of interactions between the client and the project team	
+	Improved Transparency to clients in the every phase of the project
+	The delivery of the output is predictable and can sometimes be earlier than expected
+	The cost of the project are predictable and follow a rigid schedule
+	The client can provide the priority of he features, allowign the team to ensure maximum project value
+	By focusing on the needs of the users, the team can deliver value to the customers
+	The project is broken into smaller units, with high quality development, testign and collaboration
+	
+Agile Methodologies
+==========	
+-> Extream programming 
+-> Kanban	-> is a method used to design manage and improve the flow of the systems
+			->Organizations can limit their flow of work and limiting their work in progress
+-> Lean 
+	is a set of tools and principles that aims to identify and remove waste to increase the speed of the process development.
+	It focuses on maximizing the value of the client, ensuring waste is minimized
+
+-> Scrum	
+		Scrum is a framework that is used by the teams to establish a hypothesis, try it out, reflect the experience and adjust
+		It is used to enables the teams to incorporate practices and the other frameowrks depending on the teams requirements
+	it is used when the cross funtional teams are working  on the product development when the work is split into more than one 2-4 weeks iterations 
+-> Crystal
+	it is an approach to s/w development and focuses on peopel and their intractions, rather than tools and processes
+
+
+Agile vs scrum
+==================
+==> Agile is a set of principles that's iterative and incremental in nature
+=> Suited for projects involving a small team of experts
+=> Project head takes care of the all tasks an vital to the project
+=> The methodology requires frequent delivery to the end user
+=> face to face interactions take place between cross-functional teams
+=> The design and execution is simple
+
+=> Scrum is an implemetation of agile methodology 
+=> Used in projects where the requirements a re constantly changing
+=> There is no leader, the scrum master and the team addresses the issues..it inloves the cross functional, self-organizing team
+=> With sprints, builds are delivered to clients feedback
+=> daily standup meetings help with collaboration
+=> The design and execution can be innovative and experimental
+
+
+Kanban?
+==============
+Kanban.. which translates to signboard is a visual system that is used for managing work as it goes through the process
+Kanban helps determine bottlenecks, and then fix them in a cost-effective manner and optimal speeds. this is done with the help of a kanban board..
+it invovles having work beeing split into pieces, and the work is item is written on a note/card and put on board
+the colums help illuestrate where each item is in the workflow
+
+working?
+	to-do
+	On-going
+	Done
+	
+	
+Lean and agile
+============
+Reduces work in progress
+The work is broken into pieces
+both use pull scheduling
+Transparency drives process improvements
+the release plan is continously optimizes
+relaeses deliverables are delivered offen and early
+
+
+
+Scrum vs Kanban
+===============
+scrum		-> the process is devided into time-constrainted iterations
+		-> releases takes place at the end of the each sprint
+		-> chanegs can't made during the sprint
+		=> Velocity is the default metric used in planning the process improvement
+		=> cross -funtional teams are mandatory for requirements
+		=> Items can't be added in between the an iteration
+		=>Has 3 major jo roles
+			product owner
+			scrum master
+			Scrum team
+		=> scrum board needs to be reset afer each sprint
+		=> it is better suited fror long runing projects
+kanban  -> event-driven instead of timeboxed
+		-> Releases takes place int he form of continous delivery
+		-> Changes can made at any time
+		-> Lead time is the default metric used for planning  and process improvement
+		-> Specialist teams are required and cross functional teams are optional
+		-> new capacity can be added, if there's capacity available
+		-> Specific job roles havent; been setup
+		-> Kanban board stays persistance through-out the project
+		-> Kanban works better for projects thet are expected to finish in shorter time
+		
+		
+==============
+User Stories,Epics describes anything of value that the team can produce for the customers
+
+
+User stories are agile s/w development project management tool that provides users with simple, natural language explanations of one or more features
+written from the end-users perspective
+
+User story doen't go in details.. it jsut mentioned how certain type of work will bring value tot he end user
+User storeis also forms the building blcoks of agaile frameowrks like epics and intiatives
+
+epics represents large amount of work broken down into user stories
+
+combination of multiple epics forms a intiative
+
+these helps us to ensure the the teams work tot he goals of  the organizatin through the epics and initiatives
+
+
+Adv of User Stories
+===
+Delivers high quality content
+Eases collaboration with team members
+Helps understanding users better
+Improves tranparency
+Reduces risks
+supports iterative development.
+
+
+
+INVEST is a concept that helps create a meaningful user stories
+Independent->
+Negotiable--> Stories should be discussable and should be open for negotiation
+Valuble -> storeis must be balue ensure to the customers always
+Estimable => storeis must be esimable and  can be devided into tasks
+Small =>stories shouldn't be too big 
+Testable
+
+
+3 cards of USER STOREIS
+==
+card 
+conversation
+confrimation
+
+
+Agile Project Management
+=============
+APM is a way by which project can be managed by breaking it into several stages of sprints
+it doeent' require a project manager to have a central control
+
+Agile Development Cyc;
+==
+product backlog ->at the end of each stage we get a mini project, there's a product backlog that explains new feautres and changes in the existing features
+				in several other requirements in the project
+Spring backlog -> which has a list of tasks that are to be completed during each sprint
+				every sprint consists of 
+					planning
+					designing
+					Execution
+					Testing 
+					Release
+ 
+ why APM?
+ ======
+ High products quality
+ high customer satisfaction
+ Reduce Risks
+ Better and faster ROI
+ 
+ principles of APM
+ ===============
+ -> customer is satisfied bcs of fast and continous delevarables
+ -> Shortening the period between planning and delivery, increases the effectiveness of the work
+ -> Managers and Developers work together for better understanding and productive work
+ -> Accepting stackholder changes even late in the development phase 
+ -> Better coordination with team members
+ -> Monotering the project progress at each iteration and finding solutions wherever needed
+ -> trust and supports the team to complete project objectives
+ -> The requirements are understood, and the simplest solution to meet those requirements is taken
+ 
+ 
+ 6 steps in APM
+ ========
+ -> Project Planning
+ -> roadmap creation
+ -> Release planning
+ -> sprint Planning
+ -> Daily meetings
+ -> sprint review and retrospective
+ 
+ Most popular Agile frameworks are
+ ======
+ Kanban framework
+ scrum framework
+ Hybrid framework
+ Lean framework

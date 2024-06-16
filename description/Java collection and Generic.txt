@@ -1,0 +1,80 @@
+Collection ->when you talk about interface we will talk about C
+collection -> collection as a class
+collections -> it is also a class
+
+collection -interface
+|
+List interface
+|
+ArrayList class
+
+in Java 1.2 1.3 generic is not there .. we have generic from java 1.5
+
+Collection<Integer> val = new ArrayList<Integer>();
+
+	here collection doesn't work with index number ..in order to work with index number instead of using Collection.. we will use List 
+	
+	List<Integer> val = new ArrayList<Integer>();
+	
+	
+	-> List will have duplicates..the order in which the elements u inserted is fixed
+	
+	like this we have  
+	
+	Set<Integer> s = new HashSet<>();
+	
+	Set -The order in which u get elements is random order
+	
+	we have 
+	Set<Integer> s = new TreeSet<>();
+	
+	if you use treeset the elements will get srted by default
+	
+	we also have something called Map
+	-> Map will have a key and value pairs
+	
+
+Internal Working of hashMap
+============================
+	
+We need to cover 3 min points in High level for this question:
+It works on the principle of hashing
+How Put Method works Internal working
+How Get method Works internally
+
+Hash Map internally works on the principle of Hashing.
+
+Hashing means using some function or algorithm to map object data to some integer value, hashCode() method return you that hash code. Hence Its necessary to write hashCode() method properly for better performance of HashMap.
+
+If you override hashCode() method, it’s necessary to fulfill Equals and Hashcode Contract.
+
+MAP is an object that maps keys to values”
+
+So, there must be some mechanism in HashMap to store this key-value pair. 
+
+Everything in Hashmap is stored in a bucket internally (of hash table - underling DS)
+
+Firstly  hash value is calculated using the key’s hash code by calling its hashCode() method. This hash value is used to calculate the index in the array for storing Entry object. JDK designers well assumed that there might be some poorly written hashCode() functions that can return very high or low hash code value. To solve this issue, they introduced another hash() function and passed the object’s hash code to this hash() function to bring hash value in the range of array index size.
+
+With Hash Code in place , we put the newly created Entry object K,V in the bucket of Hash Table.
+
+So, in case of collision, Entry objects are stored in linked list form. When an Entry object needs to be stored in particular index, HashMap checks whether there is already an entry?? If there is no entry already present, the entry object is stored in this location.
+
+If there is already an object sitting on calculated index, its next attribute is checked. If it is null, and current entry object becomes next node in linkedlist. If next variable is not null, procedure is followed until next is evaluated as null.
+
+What if we add the another value object with same key as entered before. Logically, it should replace the old value. How it is done? Well, after determining the index position of Entry object, while iterating over linkedist on calculated index, HashMap calls equals method on key object for each entry object.
+All these entry objects in linkedlist will have similar hashcode but equals() method will test for true equality. If key.equals(k) will be true then both keys are treated as same key object. This will cause the replacing of value object inside entry object only.
+
+We know that two unequal objects can have the same hash code value. This is a case of collision.
+
+Hash collisions have negative impact on the lookup time of HashMap. When multiple keys end up in the same bucket, then values along with their keys used to be placed in a linked list. In case of retrieval, linked list has to be traversed to get the entry. In worst case scenario, when all keys are mapped to the same bucket, the lookup time of HashMap increases from O(1) to O(n).
+
+Java 8 has come with the following improvements/changes of HashMap objects in case of high collisions.
+The alternative String hash function added in Java 7 has been removed.
+Buckets containing a large number of colliding keys will store their entries in a balanced tree instead of a linked list after certain threshold is reached.
+
+
+
+HashSet<>
+===
+also uses hash map internally
